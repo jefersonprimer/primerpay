@@ -1,10 +1,14 @@
 import { useFonts } from 'expo-font';
-import { DarkTheme, DefaultTheme, Stack, ThemeProvider } from 'expo-router';
+import { Stack } from 'expo-router';
 import * as SplashScreen from 'expo-splash-screen';
 import { useEffect } from 'react';
+import { Platform, StatusBar as RNStatusBar } from 'react-native';
+import { StatusBar } from 'expo-status-bar';
+import { NavigationBar } from 'expo-navigation-bar';
 import 'react-native-reanimated';
 
-import { useColorScheme } from '@/components/useColorScheme';
+import { PaymentProvider } from '@/context/PaymentContext';
+import { Paleta } from '@/constants/Colors';
 
 export {
   // Catch any errors thrown by the Layout component.
@@ -24,7 +28,6 @@ export default function RootLayout() {
     SpaceMono: require('../assets/fonts/SpaceMono-Regular.ttf'),
   });
 
-  // Expo Router uses Error Boundaries to catch errors in the navigation tree.
   useEffect(() => {
     if (error) throw error;
   }, [error]);
@@ -35,22 +38,43 @@ export default function RootLayout() {
     }
   }, [loaded]);
 
+  // Sincroniza barras do sistema (StatusBar e NavigationBar) com o fundo do app
+  useEffect(() => {
+    if (Platform.OS === 'android') {
+      RNStatusBar.setBackgroundColor(Paleta.cinzaFundo);
+      RNStatusBar.setBarStyle('dark-content');
+      try {
+        NavigationBar.setStyle('dark');
+      } catch {}
+    }
+  }, []);
+
   if (!loaded) {
     return null;
   }
 
-  return <RootLayoutNav />;
-}
-
-function RootLayoutNav() {
-  const colorScheme = useColorScheme();
-
   return (
-    <ThemeProvider value={colorScheme === 'dark' ? DarkTheme : DefaultTheme}>
-      <Stack>
+    <PaymentProvider>
+      {/* Sincroniza a Ilha Dinâmica / Notch / Barra de Status superior */}
+      <StatusBar style="dark" />
+      {/* Sincroniza a Barra de Botões do sistema inferior */}
+      {Platform.OS === 'android' && <NavigationBar style="dark" />}
+      <Stack
+        screenOptions={{
+          contentStyle: { backgroundColor: Paleta.cinzaFundo },
+        }}>
         <Stack.Screen name="(tabs)" options={{ headerShown: false }} />
-        <Stack.Screen name="modal" options={{ presentation: 'modal' }} />
+        <Stack.Screen
+          name="modal"
+          options={{
+            presentation: 'modal',
+            headerTitle: 'Sobre o PrimerPay',
+            headerStyle: { backgroundColor: Paleta.cinzaFundo },
+            headerTintColor: Paleta.textoPrincipal,
+            headerShadowVisible: false,
+          }}
+        />
       </Stack>
-    </ThemeProvider>
+    </PaymentProvider>
   );
 }

@@ -1,68 +1,95 @@
-import { SymbolView } from 'expo-symbols';
-import { Link, Tabs } from 'expo-router';
-import { Platform, Pressable } from 'react-native';
-
-import Colors from '@/constants/Colors';
-import { useColorScheme } from '@/components/useColorScheme';
-import { useClientOnlyValue } from '@/components/useClientOnlyValue';
+import React from 'react';
+import { Tabs } from 'expo-router';
+import { Paleta } from '@/constants/Colors';
+import { TabBarCustom } from '@/components/TabBarCustom';
+import {
+  House,
+  CreditCard,
+  HandCoins,
+  ShoppingBag,
+  Menu,
+  Smartphone,
+  BarChart3,
+} from 'lucide-react-native';
 
 export default function TabLayout() {
-  const colorScheme = useColorScheme();
-
   return (
     <Tabs
+      tabBar={(props) => <TabBarCustom {...props} />}
       screenOptions={{
-        tabBarActiveTintColor: Colors[colorScheme].tint,
-        // Disable the static render of the header on web
-        // to prevent a hydration error in React Navigation v6.
-        headerShown: useClientOnlyValue(false, true),
+        tabBarActiveTintColor: Paleta.primaria,
+        tabBarInactiveTintColor: Paleta.textoMutado,
+        tabBarLabelStyle: {
+          fontSize: 11,
+          fontWeight: '600',
+        },
+        headerStyle: {
+          backgroundColor: Paleta.cinzaFundo,
+        },
+        headerTitleStyle: {
+          fontWeight: '700',
+          color: Paleta.textoPrincipal,
+        },
+        headerShadowVisible: false,
+        sceneStyle: {
+          backgroundColor: Paleta.cinzaFundo,
+        },
       }}>
       <Tabs.Screen
         name="index"
         options={{
-          title: 'Tab One',
-          tabBarIcon: ({ color }) => (
-            <SymbolView
-              name={{
-                ios: 'chevron.left.forwardslash.chevron.right',
-                android: 'code',
-                web: 'code',
-              }}
-              tintColor={color}
-              size={28}
-            />
-          ),
-          headerRight: () => (
-            <Link href="/modal" asChild>
-              <Pressable style={{ marginRight: 15 }}>
-                {({ pressed }) => (
-                  <SymbolView
-                    name={{ ios: 'info.circle', android: 'info', web: 'info' }}
-                    size={25}
-                    tintColor={Colors[colorScheme].text}
-                    style={{ opacity: pressed ? 0.5 : 1 }}
-                  />
-                )}
-              </Pressable>
-            </Link>
-          ),
+          title: 'Home',
+          headerShown: false,
+          tabBarIcon: ({ color }) => <House size={22} color={color} />,
         }}
       />
       <Tabs.Screen
-        name="two"
+        name="cartao"
         options={{
-          title: 'Tab Two',
-          tabBarIcon: ({ color }) => (
-            <SymbolView
-              name={{
-                ios: 'chevron.left.forwardslash.chevron.right',
-                android: 'code',
-                web: 'code',
-              }}
-              tintColor={color}
-              size={28}
-            />
-          ),
+          title: 'Cartão',
+          headerTitle: 'Meu Cartão',
+          tabBarIcon: ({ color }) => <CreditCard size={22} color={color} />,
+        }}
+      />
+      <Tabs.Screen
+        name="emprestimo"
+        options={{
+          title: 'Empréstimo',
+          headerTitle: 'Empréstimo',
+          tabBarIcon: ({ color }) => <HandCoins size={22} color={color} />,
+        }}
+      />
+      <Tabs.Screen
+        name="shop"
+        options={{
+          title: 'Shop',
+          headerTitle: 'Shop',
+          tabBarIcon: ({ color }) => <ShoppingBag size={22} color={color} />,
+        }}
+      />
+      <Tabs.Screen
+        name="menu"
+        options={{
+          title: 'Menu',
+          headerTitle: 'Menu',
+          tabBarIcon: ({ color }) => <Menu size={22} color={color} />,
+        }}
+      />
+      {/* Telas fora da tab bar — acessíveis via Home/Menu */}
+      <Tabs.Screen
+        name="cliente"
+        options={{
+          title: 'Pagar (Cliente)',
+          headerTitle: 'PrimerBank • Pagamento Pix',
+          tabBarIcon: ({ color }) => <Smartphone size={22} color={color} />,
+        }}
+      />
+      <Tabs.Screen
+        name="historico"
+        options={{
+          title: 'Histórico',
+          headerTitle: 'Painel de Vendas',
+          tabBarIcon: ({ color }) => <BarChart3 size={22} color={color} />,
         }}
       />
     </Tabs>
